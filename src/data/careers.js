@@ -22,6 +22,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero en públicas', 'ICETEX línea tecnología', 'MinTIC becas digitales'],
     tag: 'Alta demanda',
+    saturacion: 'baja',
   },
   {
     id: 'medicina',
@@ -46,6 +47,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero en públicas', 'Fondo MEN para medicina en municipios apartados'],
     tag: 'Máximo prestigio',
+    saturacion: 'baja',
   },
   {
     id: 'psicologia',
@@ -70,6 +72,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero en públicas', 'ICETEX'],
     tag: 'Creciente demanda',
+    saturacion: 'media',
   },
   {
     id: 'administracion-empresas',
@@ -94,6 +97,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'ICETEX', 'Becas institucionales por mérito'],
     tag: 'Alta empleabilidad',
+    saturacion: 'alta',
   },
   {
     id: 'diseno-grafico',
@@ -118,6 +122,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'MinCultura becas artes'],
     tag: 'Economía creativa',
+    saturacion: 'baja',
   },
   {
     id: 'derecho',
@@ -142,6 +147,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero en públicas', 'ICETEX'],
     tag: 'Alto prestigio',
+    saturacion: 'alta',
   },
   {
     id: 'ingenieria-ambiental',
@@ -166,6 +172,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'ICETEX línea ciencias ambientales'],
     tag: 'Carrera del futuro',
+    saturacion: 'baja',
   },
   {
     id: 'licenciatura',
@@ -190,6 +197,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'Becas Ser Pilo Paga renovadas', 'Fondo MEN para docentes'],
     tag: 'Impacto social',
+    saturacion: 'media',
   },
   {
     id: 'medicina-veterinaria',
@@ -214,6 +222,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'Programa Jóvenes del Campo (MinAgricultura)'],
     tag: 'Vocación rural',
+    saturacion: 'baja',
   },
   {
     id: 'tecnologia-software',
@@ -235,6 +244,7 @@ export const CARRERAS = [
     },
     becas: ['SENA gratuito', 'MinTIC becas digitales', 'Matrícula Cero en públicas'],
     tag: 'Acceso rápido',
+    saturacion: 'baja',
   },
   {
     id: 'fisioterapia',
@@ -259,6 +269,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'ICETEX'],
     tag: 'Segunda más demandada',
+    saturacion: 'baja',
   },
   {
     id: 'comunicacion-social',
@@ -283,6 +294,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'MinCultura'],
     tag: 'Era digital',
+    saturacion: 'alta',
   },
   {
     id: 'contaduria',
@@ -303,6 +315,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'ICETEX'],
     tag: 'Siempre necesario',
+    saturacion: 'alta',
   },
   {
     id: 'ingenieria-industrial',
@@ -327,6 +340,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'ICETEX línea ingeniería'],
     tag: 'Muy versátil',
+    saturacion: 'media',
   },
   {
     id: 'trabajo-social',
@@ -348,6 +362,7 @@ export const CARRERAS = [
     },
     becas: ['Matrícula Cero', 'Becas para víctimas del conflicto'],
     tag: 'Impacto comunitario',
+    saturacion: 'baja',
   },
 
   // ── CARRERAS EMERGENTES ──────────────────────────────────────

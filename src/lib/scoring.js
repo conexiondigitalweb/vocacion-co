@@ -2,9 +2,14 @@ export function calcularPerfil(respuestas) {
   const scores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
 
   // Holland directo (peso alto) — P1-P4
+  // E y C reciben peso reducido en q1/q3 para evitar sobrepeso por respuestas "neutras"
   const hollandMap = { q1: 3, q2: 2, q3: 3, q4: 2 }
+  const pesoReducido = { E: 2, C: 2 }
   Object.entries(hollandMap).forEach(([q, peso]) => {
-    if (respuestas[q]) scores[respuestas[q]] += peso
+    const tipo = respuestas[q]
+    if (!tipo) return
+    const pesoFinal = (peso === 3 && pesoReducido[tipo]) ? pesoReducido[tipo] : peso
+    scores[tipo] += pesoFinal
   })
 
   // Inteligencias múltiples → Holland (peso medio)
@@ -114,6 +119,9 @@ export function matchCarreras(perfil, respuestas, carrerasDB) {
 
       // Boost carreras emergentes para EMER
       if (modo === 'EMER' && c.emergente) score += 4
+
+      // Penalización por saturación: solo cuando el match es débil
+      if (c.saturacion === 'alta' && score < 8) score -= 2
 
       return { ...c, matchScore: score }
     })

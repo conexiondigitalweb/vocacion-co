@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toPng } from 'html-to-image'
 import { useTestStore } from '../store/testStore'
 import ProfileChart from '../components/results/ProfileChart'
 import CareerCard from '../components/results/CareerCard'
@@ -16,6 +17,24 @@ export default function Results() {
   const navigate = useNavigate()
   const { resultado, respuestas, resetTest } = useTestStore()
   const [mostrarMas, setMostrarMas] = useState(false)
+  const [descargando, setDescargando] = useState(false)
+  const cardRef = useRef(null)
+
+  const descargarImagen = async () => {
+    if (!cardRef.current) return
+    setDescargando(true)
+    try {
+      const dataUrl = await toPng(cardRef.current, { quality: 0.95, backgroundColor: '#ffffff' })
+      const link = document.createElement('a')
+      link.download = 'mi-perfil-vocacional.png'
+      link.href = dataUrl
+      link.click()
+    } catch (e) {
+      console.error('Error descargando imagen:', e)
+    } finally {
+      setDescargando(false)
+    }
+  }
 
   if (!resultado) {
     return (
@@ -47,6 +66,9 @@ export default function Results() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-16">
+      {/* Zona capturada como imagen */}
+      <div ref={cardRef} className="bg-white">
+
       {/* Header */}
       <div className="text-center mb-8">
         <span className="inline-block bg-primary-50 text-primary font-semibold text-sm px-4 py-1.5 rounded-full mb-4">
@@ -92,6 +114,8 @@ export default function Results() {
         </div>
       </div>
 
+      </div>{/* fin zona capturada */}
+
       {/* Compartir */}
       <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-center">
         <h3 className="font-bold text-gray-900 mb-2">¿Quieres guardar o compartir tu resultado?</h3>
@@ -103,6 +127,16 @@ export default function Results() {
           top2={top2}
           carreras={carreras}
         />
+        <button
+          onClick={descargarImagen}
+          disabled={descargando}
+          className="mt-3 flex items-center gap-2 mx-auto text-sm text-gray-600 font-medium px-4 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors disabled:opacity-50"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          {descargando ? 'Generando imagen...' : 'Descargar como imagen'}
+        </button>
       </div>
 
       {/* Qué hacer ahora */}
