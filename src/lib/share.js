@@ -11,6 +11,7 @@ export async function guardarResultado({ respuestas, scores, perfil, top2, carre
     region: respuestas.q12 || null,
     modalidad_pref: respuestas.q11 || null,
     situacion_economica: respuestas.q13 || null,
+    modo_exploracion: respuestas.q0 || 'AMBAS',
   }
 
   const { data, error } = await supabase

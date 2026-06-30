@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTestStore } from '../store/testStore'
 import { PREGUNTAS, TOTAL_PREGUNTAS } from '../data/questions'
@@ -9,16 +9,26 @@ import QuestionCard from '../components/test/QuestionCard'
 import Button from '../components/ui/Button'
 import Spinner from '../components/ui/Spinner'
 
+// q0 es introductoria — excluirla del conteo de progreso y bloques
+const PREGUNTAS_TEST = PREGUNTAS.filter(p => p.id !== 'q0')
+const PREGUNTA_INTRO = PREGUNTAS.find(p => p.id === 'q0')
+
 export default function Test() {
   const navigate = useNavigate()
   const { respuestas, pasoActual, setRespuesta, avanzar, retroceder, setResultado, resetTest } = useTestStore()
   const [analizando, setAnalizando] = useState(false)
 
-  const pregunta = PREGUNTAS[pasoActual]
-  const respuestaActual = respuestas[pregunta?.id]
+  const esIntro = pasoActual === 0
+  const pregunta = esIntro ? PREGUNTA_INTRO : PREGUNTAS_TEST[pasoActual - 1]
+  const respuestaActual = pregunta ? respuestas[pregunta.id] : undefined
+
+  // Número a mostrar en ProgressBar (solo cuenta preguntas del test, no q0)
+  const pasoTest = esIntro ? 0 : pasoActual
+  const totalTest = PREGUNTAS_TEST.length
 
   const puedeAvanzar = () => {
     if (!pregunta) return false
+    if (pregunta.tipo === 'modo') return !!respuestaActual
     if (pregunta.opcional) return true
     if (pregunta.tipo === 'multi') return (respuestaActual || []).length > 0
     if (pregunta.tipo === 'likert') return (respuestaActual || []).filter(v => v > 0).length === pregunta.items.length
@@ -28,14 +38,15 @@ export default function Test() {
 
   const handleRespuesta = (valor) => {
     setRespuesta(pregunta.id, valor)
-    // Auto-avance para selección única (excepto departamento)
-    if (pregunta.tipo === 'unica') {
+    // Auto-avance para selección única y modo (excepto departamento)
+    if (pregunta.tipo === 'unica' || pregunta.tipo === 'modo') {
       setTimeout(() => avanzarPaso(), 300)
     }
   }
 
   const avanzarPaso = () => {
-    if (pasoActual >= TOTAL_PREGUNTAS - 1) {
+    const totalPasos = PREGUNTAS_TEST.length + 1 // +1 por q0
+    if (pasoActual >= totalPasos - 1) {
       finalizarTest()
     } else {
       avanzar()
@@ -74,33 +85,46 @@ export default function Test() {
 
   if (!pregunta) return null
 
-  const esUltima = pasoActual === TOTAL_PREGUNTAS - 1
-  const necesitaBotonSiguiente = pregunta.tipo !== 'unica'
+  const esUltima = pasoActual === PREGUNTAS_TEST.length // última es q16 (paso 16 en 0-index + 1 por q0)
+  const necesitaBotonSiguiente = pregunta.tipo !== 'unica' && pregunta.tipo !== 'modo'
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Top bar */}
-      <div className="px-4 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
-        <div className="max-w-xl mx-auto">
-          <ProgressBar
-            actual={pasoActual + 1}
-            total={TOTAL_PREGUNTAS}
-            bloque={pregunta.bloque}
-            totalBloques={4}
-          />
+      {/* Top bar — oculto en intro */}
+      {!esIntro && (
+        <div className="px-4 py-4 border-b border-gray-100 bg-white sticky top-0 z-10">
+          <div className="max-w-xl mx-auto">
+            <ProgressBar
+              actual={pasoTest}
+              total={totalTest}
+              bloque={pregunta.bloque}
+              totalBloques={4}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Contenido */}
       <div className="flex-1 px-4 py-8">
         <div className="max-w-xl mx-auto">
-          {/* Bloque badge */}
-          <span className="inline-block text-xs font-semibold text-primary bg-primary-50 px-3 py-1 rounded-full mb-4">
-            {pregunta.bloqueNombre}
-            {pregunta.opcional && ' · Opcional'}
-          </span>
+          {esIntro ? (
+            // Pantalla de intro especial
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.347.347a3.75 3.75 0 01-5.303 0l-.346-.347z" />
+                </svg>
+              </div>
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Antes de empezar</p>
+            </div>
+          ) : (
+            <span className="inline-block text-xs font-semibold text-primary bg-primary-50 px-3 py-1 rounded-full mb-4">
+              {pregunta.bloqueNombre}
+              {pregunta.opcional && ' · Opcional'}
+            </span>
+          )}
 
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 leading-snug">
+          <h2 className={`font-bold text-gray-900 mb-6 leading-snug ${esIntro ? 'text-2xl sm:text-3xl text-center' : 'text-xl sm:text-2xl'}`}>
             {pregunta.pregunta}
           </h2>
 

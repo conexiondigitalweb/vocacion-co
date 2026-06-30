@@ -854,3 +854,22 @@ VITE_SUPABASE_ANON_KEY=tu_anon_key
 - El lenguaje del test debe ser natural, cercano a jóvenes colombianos (tuteo)
 - Evitar jerga técnica en las preguntas — debe entenderlo un joven de 15 años
 
+## Estado del proyecto
+
+### Sesión 1 — COMPLETADA ✓
+- Landing page (Home.jsx) desplegada en vocacion-co.vercel.app
+- Test funcional de 16 preguntas en 4 bloques
+- Algoritmo de scoring RIASEC básico
+- 15 carreras en careers.js
+- Componentes UI completos
+- Deploy automático en Vercel desde GitHub (conexiondigitalweb/vocacion-co)
+- Variables de entorno Supabase configuradas en Vercel
+
+### Problemas identificados en Sesión 1
+- El algoritmo recomienda carreras saturadas (Administración) como primera opción
+- Los tipos Holland E y C tienen demasiado peso por defecto
+- No hay carreras emergentes ni del futuro en la base de datos
+- Falta integración real con Supabase (guardar resultados, share)
+
+### Sesión 2 — PENDIENTE
+Ver prompt de Sesión 2.

@@ -19,7 +19,6 @@ export function calcularPerfil(respuestas) {
   q5.forEach(v => {
     ;(intelToHolland[v] || []).forEach(t => { scores[t] += 2 })
   })
-
   if (respuestas.q6 && intelToHolland[respuestas.q6]) {
     intelToHolland[respuestas.q6].forEach(t => { scores[t] += 1.5 })
   }
@@ -27,23 +26,38 @@ export function calcularPerfil(respuestas) {
     intelToHolland[respuestas.q7].forEach(t => { scores[t] += 1 })
   }
 
-  // Valores → Holland (peso medio)
-  const valoresMap = { DI: 'E', AU: 'E', IM: 'S', CR: 'A', CO: 'I', RS: 'E' }
-  if (respuestas.q8 && valoresMap[respuestas.q8]) scores[valoresMap[respuestas.q8]] += 2
-  // q10 tiene valores directos de Holland
-  if (respuestas.q10) {
-    if (['IM', 'CR', 'CO', 'DI', 'AU'].includes(respuestas.q10)) {
-      const v = valoresMap[respuestas.q10]
-      if (v) scores[v] += 1.5
-    } else if (respuestas.q10 === 'E') {
-      scores['E'] += 1.5
-    }
+  // Valores → Holland (rebalanceado)
+  // DI (dinero/estabilidad) → C (convencional, no E): trabajos estables tienden a ser estructurados
+  // AU (autonomía) → E pero peso reducido
+  // RS (reconocimiento) → compartido E+I, no solo E
+  // CR (creatividad) → A (artístico, no E)
+  const valoresMap = {
+    DI: 'C',  // estabilidad = estructura, no emprendimiento
+    AU: 'E',  // autonomía sí apunta a E, pero peso reducido abajo
+    IM: 'S',
+    CR: 'A',  // creatividad = artístico, no emprendedor
+    CO: 'I',
+    RS: 'E',
+  }
+  const valoresPeso = {
+    DI: 1.5, AU: 1.5, IM: 2, CR: 2, CO: 2, RS: 1.5,
+  }
+  if (respuestas.q8 && valoresMap[respuestas.q8]) {
+    scores[valoresMap[respuestas.q8]] += valoresPeso[respuestas.q8]
+  }
+
+  // q10 valores/frases directas
+  const q10Map = {
+    IM: 'S', CR: 'A', CO: 'I', E: 'E', DI: 'C', AU: 'E',
+  }
+  if (respuestas.q10 && q10Map[respuestas.q10]) {
+    scores[q10Map[respuestas.q10]] += 1.5
   }
 
   const ambienteMap = { OF: 'C', CA: 'R', SA: 'S', REM: 'A', NEG: 'E', CRE: 'A', EDU: 'S' }
   if (respuestas.q9 && ambienteMap[respuestas.q9]) scores[ambienteMap[respuestas.q9]] += 1.5
 
-  // Likert (P14) → confirmación directa (peso bajo-medio)
+  // Likert (P14) — clave q14 (no 'likert')
   const likertMap = ['A', 'I', 'S', 'A', 'E', 'R', 'A', 'C']
   const likert = respuestas.q14 || []
   likert.forEach((v, i) => {
@@ -57,7 +71,6 @@ export function calcularPerfil(respuestas) {
     perfil[k] = Math.round((v / total) * 100)
   })
 
-  // Top 2 tipos
   const ordenado = Object.entries(perfil).sort((a, b) => b[1] - a[1])
   const top2 = ordenado.slice(0, 2).map(e => e[0])
 
@@ -71,23 +84,36 @@ export function matchCarreras(perfil, respuestas, carrerasDB) {
   const q5 = respuestas.q5 || []
   const q8 = respuestas.q8
   const q9 = respuestas.q9
+  const modo = respuestas.q0 || 'AMBAS'  // pregunta introductoria
 
   return carrerasDB
     .map(c => {
       let score = 0
 
+      // Filtro por modo de exploración
+      if (modo === 'TRAD' && c.emergente) score -= 5
+      if (modo === 'EMER' && !c.emergente) score -= 3
+      // AMBAS: sin penalización
+
+      // Match Holland
       top2.forEach((t, i) => {
         if (c.tipos.includes(t)) score += 4 - i * 1.5
       })
 
+      // Match inteligencias
       q5.forEach(v => { if (c.inteligencias.includes(v)) score += 2 })
       if (respuestas.q6 && c.inteligencias.includes(respuestas.q6)) score += 1
 
+      // Match valores
       if (q8 && c.valores.includes(q8)) score += 2
       if (q9 && c.ambientes.includes(q9)) score += 1.5
 
+      // Match modalidad
       if (c.modalidad === modPref) score += 3
       if (econ === 'PUB' && ['T', 'TEC'].includes(c.modalidad)) score += 2
+
+      // Boost carreras emergentes para EMER
+      if (modo === 'EMER' && c.emergente) score += 4
 
       return { ...c, matchScore: score }
     })
@@ -113,16 +139,16 @@ export const HOLLAND_DESCRIPCIONES = {
 }
 
 export const COMBOS_TOP2 = {
-  RI: 'Tu perfil combina lo práctico con lo analítico — ideal para carreras técnicas que requieren tanto habilidad manual como pensamiento científico.',
-  RA: 'Combinas habilidad práctica con creatividad — un perfil ideal para diseño industrial, arquitectura o artes aplicadas.',
-  RS: 'Práctico y con vocación de servicio — te destacas en carreras de salud física, deportes o trabajo en comunidades.',
-  RE: 'Haces y líderas — tu perfil apunta a emprendimientos técnicos, construcción o industria.',
-  RC: 'Metódico y práctico — ideal para ingeniería, logística o gestión de operaciones.',
-  IR: 'Investigador con habilidades prácticas — perfect fit para ciencias aplicadas, laboratorios e ingeniería.',
-  IA: 'Analítico y creativo — un perfil poderoso para diseño UX, arquitectura, biología o arte digital.',
+  RI: 'Práctico y analítico — ideal para carreras técnicas que combinan habilidad manual con pensamiento científico.',
+  RA: 'Práctico y creativo — un perfil ideal para diseño industrial, arquitectura o artes aplicadas.',
+  RS: 'Práctico y con vocación de servicio — te destacas en salud física, deportes o trabajo comunitario.',
+  RE: 'Haces y líderas — emprendimientos técnicos, construcción o industria son tu terreno.',
+  RC: 'Metódico y práctico — ingeniería, logística o gestión de operaciones son ideales para ti.',
+  IR: 'Investigador con habilidades prácticas — ciencias aplicadas, laboratorios e ingeniería son tu zona.',
+  IA: 'Analítico y creativo — diseño UX, arquitectura, biología o arte digital son tu zona.',
   IS: 'Científico con vocación social — medicina, psicología, educación o trabajo social son tu terreno.',
-  IE: 'Analítico y emprendedor — ideal para tecnología, startups, finanzas o ciencias empresariales.',
-  IC: 'Investigador y sistemático — ideal para contabilidad, sistemas de información o ciencias exactas.',
+  IE: 'Analítico y emprendedor — tecnología, startups, finanzas o ciencias empresariales son ideales.',
+  IC: 'Investigador y sistemático — sistemas de información, contabilidad o ciencias exactas son tu área.',
   AI: 'Creativo con mente analítica — diseño, arquitectura, cine o tecnología creativa son tu zona.',
   AR: 'Artístico con habilidades prácticas — artes aplicadas, diseño industrial o producción audiovisual.',
   AS: 'Creativo con vocación social — comunicación, educación artística o trabajo comunitario te llenarán.',

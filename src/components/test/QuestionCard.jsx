@@ -1,8 +1,24 @@
 import OptionButton from './OptionButton'
 import MultiSelect from './MultiSelect'
 import LikertScale from './LikertScale'
+import ModoSelector from './ModoSelector'
 
 export default function QuestionCard({ pregunta, respuesta, onRespuesta }) {
+  if (pregunta.tipo === 'modo') {
+    return (
+      <div className="animate-slide-up">
+        {pregunta.ayuda && (
+          <p className="text-sm text-gray-500 italic mb-4">{pregunta.ayuda}</p>
+        )}
+        <ModoSelector
+          opciones={pregunta.opciones}
+          seleccionado={respuesta}
+          onSeleccionar={onRespuesta}
+        />
+      </div>
+    )
+  }
+
   if (pregunta.tipo === 'unica') {
     return (
       <div className="space-y-3 animate-slide-up">

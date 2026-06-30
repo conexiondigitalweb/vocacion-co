@@ -1,4 +1,38 @@
 export const PREGUNTAS = [
+  // PREGUNTA INTRODUCTORIA — Modo de exploración
+  {
+    id: 'q0',
+    numero: 0,
+    bloque: 0,
+    bloqueNombre: 'Antes de empezar',
+    tipo: 'modo',
+    pregunta: '¿Qué tipo de carreras quieres explorar?',
+    ayuda: 'Esto personaliza tus resultados. Puedes cambiarlo después.',
+    opciones: [
+      {
+        valor: 'TRAD',
+        titulo: 'Carreras establecidas',
+        texto: 'Medicina, Derecho, Ingeniería, Administración...',
+        detalle: 'Trayectorias conocidas con décadas de historia en Colombia. Alta certeza de mercado laboral.',
+        icono: '🎓',
+      },
+      {
+        valor: 'EMER',
+        titulo: 'Carreras emergentes',
+        texto: 'IA, Ciberseguridad, UX/UI, Energías Renovables...',
+        detalle: 'Perfiles del futuro con alta demanda y baja saturación. Mercado laboral en construcción.',
+        icono: '🚀',
+      },
+      {
+        valor: 'AMBAS',
+        titulo: 'Ver todas las opciones',
+        texto: 'Quiero explorar todo sin filtros',
+        detalle: 'Te mostramos tanto carreras establecidas como emergentes, ordenadas por compatibilidad.',
+        icono: '🌐',
+      },
+    ],
+  },
+
   // BLOQUE 1 — Personalidad (Holland RIASEC)
   {
     id: 'q1',
