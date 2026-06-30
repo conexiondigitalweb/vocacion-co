@@ -106,7 +106,7 @@ export default function Test() {
 
       {/* Contenido */}
       <div className="flex-1 px-4 py-8">
-        <div className="max-w-xl mx-auto">
+        <div key={pasoActual} className="max-w-xl mx-auto question-animate">
           {esIntro ? (
             // Pantalla de intro especial
             <div className="text-center mb-8">

@@ -6,6 +6,22 @@ const FAQ = [
     a: 'No. vocacion.co es completamente gratuito. No necesitas crear cuenta ni dejar tu correo.',
   },
   {
+    q: '¿Este test reemplaza una orientación vocacional profesional?',
+    a: 'No. Es un punto de partida científico, no un diagnóstico definitivo. Te ayuda a identificar patrones y explorar opciones con base en evidencia, pero si tienes dudas profundas sobre tu vocación, te recomendamos complementarlo con un psicólogo orientador vocacional.',
+  },
+  {
+    q: '¿Mis respuestas son privadas?',
+    a: 'Sí. No se requiere registro ni correo. Los datos se guardan de forma anónima y solo se comparten si tú decides generar y enviar el link de resultados. Nunca vendemos ni compartimos información con terceros.',
+  },
+  {
+    q: '¿Por qué incluyen carreras que no existen en mi ciudad?',
+    a: 'Para mostrarte el panorama completo de oportunidades, incluyendo rutas alternativas como bootcamps, programas virtuales y certificaciones online que puedes cursar desde cualquier rincón del país. La sección de universidades filtra por tu departamento cuando lo indicas.',
+  },
+  {
+    q: '¿Cada cuánto se actualiza la información de carreras y universidades?',
+    a: 'Actualizamos periódicamente con datos del Ministerio de Educación, el SNIES y observatorios laborales colombianos. Para información oficial de admisiones y costos, siempre verifica directamente con la institución.',
+  },
+  {
     q: '¿Qué tan confiable es el test?',
     a: 'Usa tres frameworks validados por décadas de investigación en psicología vocacional: Holland RIASEC, Inteligencias Múltiples de Gardner y Valores de Trabajo de Super. No reemplaza la orientación profesional, pero ofrece una base científica sólida para empezar a explorar.',
   },
@@ -16,14 +32,6 @@ const FAQ = [
   {
     q: '¿Qué hago si mi resultado no me convence?',
     a: 'Responder con honestidad es clave. Si no reconoces tu perfil, te sugerimos revisar las preguntas de Holland (1-4) — son las de mayor peso en el algoritmo.',
-  },
-  {
-    q: '¿Las universidades mencionadas están verificadas?',
-    a: 'Sí. Las instituciones listadas por departamento son reales y ofrecen los programas mencionados. Para información actualizada de admisiones, consulta directamente el SNIES (snies.mineducacion.gov.co).',
-  },
-  {
-    q: '¿Para qué sirven las preguntas opcionales (P15 y P16)?',
-    a: 'La P15 captura si ya tienes alguna preferencia consciente. La P16 detecta posibles sesgos por influencia familiar. Ambas se usan para darte contexto, no penalizan ni benefician directamente el scoring.',
   },
 ]
 
@@ -120,6 +128,19 @@ export default function About() {
               </div>
             </details>
           ))}
+        </div>
+      </section>
+
+      {/* Origen del proyecto */}
+      <section className="mb-12">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6">
+          <p className="text-gray-700 leading-relaxed text-sm">
+            <strong className="text-gray-900">¿Por qué existe vocacion.co?</strong> Colombia tiene una de las tasas
+            de deserción universitaria más altas de América Latina. Una parte significativa de esa deserción ocurre
+            porque los jóvenes eligen carrera sin conocerse realmente a sí mismos — guiados por la moda, la presión
+            familiar o lo que hacen sus amigos. Este proyecto nació de esa inquietud: ofrecer una herramienta gratuita,
+            seria y accesible para cualquier joven colombiano, sin importar su región o condición económica.
+          </p>
         </div>
       </section>
 

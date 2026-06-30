@@ -29,7 +29,7 @@ export default function ProfileChart({ perfil }) {
           <XAxis type="number" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 11 }} />
           <YAxis type="category" dataKey="nombre" tick={{ fontSize: 12, fontWeight: 600 }} width={110} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="valor" radius={[0, 6, 6, 0]}>
+          <Bar dataKey="valor" radius={[0, 6, 6, 0]} isAnimationActive={true} animationBegin={300} animationDuration={1200} animationEasing="ease-out">
             {data.map((entry, index) => (
               <Cell
                 key={entry.tipo}

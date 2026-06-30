@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { toPng } from 'html-to-image'
 import { obtenerResultado } from '../lib/share'
 import ProfileChart from '../components/results/ProfileChart'
@@ -77,8 +78,19 @@ export default function Share() {
   const comboKey = top2.join('')
   const comboDesc = COMBOS_TOP2[comboKey] || COMBOS_TOP2[top2.slice().reverse().join('')] || ''
 
+  const carreraTop = topCarreras[0]?.nombre || ''
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 pb-16">
+      <Helmet>
+        <title>Mi vocación es: {carreraTop} 🎓 — vocacion.co</title>
+        <meta name="description" content={`Perfil vocacional ${top2.map(t => HOLLAND_NOMBRES[t]).join(' + ')}. ${comboDesc}`} />
+        <meta property="og:title" content={`Mi vocación es: ${carreraTop} 🎓`} />
+        <meta property="og:description" content={`Descubrí mi perfil vocacional con vocacion.co. ¿Cuál es el tuyo?`} />
+        <meta property="og:image" content="https://vocacion-co.vercel.app/og-image.png" />
+        <meta property="og:url" content={shareUrl} />
+      </Helmet>
+
       {/* Banner */}
       <div className="bg-primary-50 border-2 border-primary-100 rounded-2xl p-4 mb-8 text-center">
         <p className="text-primary font-semibold">Alguien compartió su perfil vocacional contigo</p>
