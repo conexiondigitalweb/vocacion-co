@@ -15,7 +15,7 @@ export default function Footer() {
         </div>
 
         <p className="text-sm text-center">
-          Desarrollado con propósito social · Colombia 2025
+          Desarrollado con propósito social · Colombia 2026
         </p>
 
         <nav className="flex gap-4 text-sm">
