@@ -4,6 +4,7 @@ import { guardarResultado } from '../../lib/share'
 export default function ShareButton({ respuestas, scores, perfil, top2, carreras }) {
   const [estado, setEstado] = useState('idle') // idle | loading | copiado | error
   const [shareUrl, setShareUrl] = useState('')
+  const [clipboardOk, setClipboardOk] = useState(false)
 
   const compartir = async () => {
     setEstado('loading')
@@ -11,10 +12,17 @@ export default function ShareButton({ respuestas, scores, perfil, top2, carreras
       const code = await guardarResultado({ respuestas, scores, perfil, top2, carreras })
       const url = `${window.location.origin}/resultado/${code}`
       setShareUrl(url)
-      await navigator.clipboard.writeText(url)
       setEstado('copiado')
+
+      // Intentar copiar al portapapeles — falla silenciosamente si no hay permiso
+      try {
+        await navigator.clipboard.writeText(url)
+        setClipboardOk(true)
+      } catch {
+        setClipboardOk(false)
+      }
     } catch (e) {
-      console.error('[ShareButton] Error:', e)
+      console.error('[ShareButton] Error guardando resultado:', e)
       setEstado('error')
       setTimeout(() => setEstado('idle'), 3000)
     }
@@ -29,36 +37,55 @@ export default function ShareButton({ respuestas, scores, perfil, top2, carreras
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <button
-        onClick={compartir}
-        disabled={estado === 'loading'}
-        className="flex items-center gap-2 bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-colors disabled:opacity-60"
-      >
-        {estado === 'loading' ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            Generando enlace...
-          </>
-        ) : estado === 'copiado' ? (
-          <>
+      {estado !== 'copiado' && (
+        <button
+          onClick={compartir}
+          disabled={estado === 'loading'}
+          className="flex items-center gap-2 bg-green-500 text-white font-semibold px-6 py-3 rounded-xl hover:bg-green-600 transition-colors disabled:opacity-60"
+        >
+          {estado === 'loading' ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Generando enlace...
+            </>
+          ) : (
+            <>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              Compartir mis resultados
+            </>
+          )}
+        </button>
+      )}
+
+      {estado === 'copiado' && (
+        <div className="flex flex-col items-center gap-3 w-full">
+          <div className="flex items-center gap-2 text-green-700 font-semibold text-sm">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
-            ¡Enlace copiado!
-          </>
-        ) : (
-          <>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-            </svg>
-            Compartir mis resultados
-          </>
-        )}
-      </button>
+            {clipboardOk ? '¡Enlace copiado al portapapeles!' : '¡Enlace generado!'}
+          </div>
 
-      {shareUrl && estado === 'copiado' && (
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-xs text-gray-500 text-center">Enlace copiado al portapapeles</p>
+          {/* Mostrar URL copiable si el clipboard falló */}
+          {!clipboardOk && (
+            <div className="w-full bg-gray-100 rounded-xl px-3 py-2 flex items-center gap-2">
+              <input
+                readOnly
+                value={shareUrl}
+                className="flex-1 bg-transparent text-xs text-gray-700 outline-none min-w-0"
+                onFocus={e => e.target.select()}
+              />
+              <button
+                onClick={() => navigator.clipboard.writeText(shareUrl).catch(() => {})}
+                className="text-xs text-primary font-semibold shrink-0"
+              >
+                Copiar
+              </button>
+            </div>
+          )}
+
           <button
             onClick={enviarWhatsApp}
             className="flex items-center gap-2 bg-[#25D366] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#1ebe57] transition-colors text-sm"
